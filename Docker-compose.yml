@@ -1,0 +1,108 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: music-postgres
+    environment:
+      POSTGRES_DB: musicdb
+      POSTGRES_USER: music
+      POSTGRES_PASSWORD: music
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U music -d musicdb"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-12-18T16-33-09Z
+    container_name: music-minio
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000" # S3 endpoint
+      - "9001:9001" # Console
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Cria bucket automaticamente
+  minio-init:
+    image: quay.io/minio/mc:RELEASE.2024-12-18T00-53-56Z
+    container_name: music-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 minio minio123 &&
+      mc mb -p local/album-images || true &&
+      mc anonymous set download local/album-images || true &&
+      echo 'MinIO bucket ready: album-images'
+      "
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: music-api
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+    ports:
+      - "8080:8080"
+    environment:
+      # Datasource
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/musicdb
+      SPRING_DATASOURCE_USERNAME: music
+      SPRING_DATASOURCE_PASSWORD: music
+
+      # JPA/Flyway
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_FLYWAY_ENABLED: "true"
+
+      # Allowed origins (CORS)
+      APP_API_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:5173"
+
+      # JWT (exemplo)
+      APP_SECURITY_JWT_ISSUER: "music-api"
+      APP_SECURITY_JWT_SECRET: "TROQUE_POR_UMA_SECRET_FORTE"
+      APP_SECURITY_JWT_ACCESS_TOKEN_MINUTES: "5"
+      APP_SECURITY_JWT_REFRESH_TOKEN_DAYS: "7"
+
+      # MinIO
+      APP_MINIO_ENDPOINT: "http://minio:9000"
+      APP_MINIO_ACCESS_KEY: "minio"
+      APP_MINIO_SECRET_KEY: "minio123"
+      APP_MINIO_BUCKET: "album-images"
+      APP_MINIO_PRESIGN_EXP_MINUTES: "30"
+
+      # Rate limit
+      APP_RATE_LIMIT_PER_USER_CAPACITY: "10"
+      APP_RATE_LIMIT_PER_USER_REFILL_MINUTES: "1"
+
+      # Integração regionais (se usar)
+      INTEGRATION_REGIONAIS_BASE_URL: "https://integrador-argus-api.geia.vip"
+      INTEGRATION_REGIONAIS_PATH: "/v1/regionais"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  pgdata:
+  miniodata:

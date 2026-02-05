@@ -1,0 +1,56 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: seletivo-seplag
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/musicdb
+    username: music
+    password: music
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+app:
+  api:
+    allowed-origins: "https://seu-dominio.com.br,http://localhost:3000"
+  security:
+    jwt:
+      issuer: "music-api"
+      access-token-minutes: 5
+      refresh-token-days: 7
+      secret: "TROQUE_POR_UMA_SECRET_FORTE"
+  minio:
+    endpoint: "http://localhost:9000"
+    access-key: "minio"
+    secret-key: "minio123"
+    bucket: "album-images"
+    presign-exp-minutes: 30
+  rate-limit:
+    per-user:
+      capacity: 10
+      refill-minutes: 1
+
+integration:
+  regionais:
+    base-url: "https://integrador-argus-api.geia.vip"
+    path: "/v1/regionais"
