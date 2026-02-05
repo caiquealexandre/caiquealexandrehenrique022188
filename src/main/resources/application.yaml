@@ -6,15 +6,16 @@ spring:
     name: seletivo-seplag
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/musicdb
-    username: music
-    password: music
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: root
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
+        default_schema: musicdb
 
   flyway:
     enabled: true
