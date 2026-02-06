@@ -72,7 +72,10 @@ services:
 
       # JPA/Flyway
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: musicdb
       SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_SCHEMAS: musicdb
+      SPRING_FLYWAY_CREATE_SCHEMAS: "true"
 
       # Allowed origins (CORS)
       APP_API_ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:5173"

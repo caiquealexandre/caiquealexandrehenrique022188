@@ -1,17 +1,25 @@
 # ========= BUILD STAGE =========
-FROM maven:3.9.9-eclipse-temurin-17 AS build
+FROM eclipse-temurin:21-jdk AS build
 WORKDIR /app
 
+# Copia arquivos de configuração do Gradle
+COPY gradlew .
+COPY gradle ./gradle
+COPY build.gradle .
+COPY settings.gradle .
+
+# Dá permissão de execução ao gradlew
+RUN chmod +x gradlew
+
 # Cache de dependências
-COPY pom.xml .
-RUN mvn -q -e -DskipTests dependency:go-offline
+RUN ./gradlew dependencies --no-daemon
 
 # Build
 COPY src ./src
-RUN mvn -q -DskipTests clean package
+RUN ./gradlew bootJar --no-daemon -x test
 
 # ========= RUNTIME STAGE =========
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Usuário não-root
@@ -19,7 +27,7 @@ RUN addgroup -S app && adduser -S app -G app
 USER app
 
 # Copia o jar gerado
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","/app/app.jar"]
