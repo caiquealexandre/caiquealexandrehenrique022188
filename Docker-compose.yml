@@ -24,8 +24,8 @@ services:
       MINIO_ROOT_PASSWORD: minio123
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000" # S3 endpoint
-      - "9001:9001" # Console
+      - "9010:9000" # S3 endpoint
+      - "9011:9001" # Console
     volumes:
       - miniodata:/data
     healthcheck:
