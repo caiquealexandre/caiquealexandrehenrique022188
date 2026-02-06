@@ -1,15 +1,15 @@
 package br.gov.mt.seletivo_seplag.infra.persistence.entity;
 
-
-import br.gov.mt.seletivo_seplag.infra.persistence.entity.enums.TipoArtistaEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,21 +25,27 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "tb_artista")
-public class ArtistaEntity extends BaseEntity {
+@Table(name = "tb_album")
+public class AlbumEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(nullable = false, length = 200)
-  private String nome;
+  private String titulo;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 20)
-  private TipoArtistaEnum tipoArtista;
+  @Column(name = "ano_lancamento")
+  private Integer anoLancamento;
 
-  @ManyToMany(mappedBy = "artistas")
-  private Set<AlbumEntity> albuns = new HashSet<>();
+  @ManyToMany
+  @JoinTable(
+      name = "artista_album",
+      joinColumns = @JoinColumn(name = "album_id"),
+      inverseJoinColumns = @JoinColumn(name = "artista_id")
+  )
+  private Set<ArtistaEntity> artistas = new HashSet<>();
 
+  @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+  private Set<AlbumImageEntity> images = new HashSet<>();
 }
