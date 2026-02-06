@@ -1,0 +1,39 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: false
+
+app:
+  api:
+    allowed-origins: "http://localhost:3000"
+  security:
+    jwt:
+      issuer: "music-api-test"
+      access-token-minutes: 5
+      refresh-token-days: 7
+      secret: "test-secret-key-for-testing-only-not-for-production"
+  minio:
+    endpoint: "http://localhost:9000"
+    access-key: "minio"
+    secret-key: "minio123"
+    bucket: "test-bucket"
+    presign-exp-minutes: 30
+  rate-limit:
+    per-user:
+      capacity: 100
+      refill-minutes: 1
+
+integration:
+  regionais:
+    base-url: "http://localhost:8081"
+    path: "/v1/regionais"

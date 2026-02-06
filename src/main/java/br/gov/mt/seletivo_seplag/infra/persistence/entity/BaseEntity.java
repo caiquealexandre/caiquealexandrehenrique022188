@@ -2,6 +2,8 @@ package br.gov.mt.seletivo_seplag.infra.persistence.entity;
 
 import br.gov.mt.seletivo_seplag.infra.persistence.entity.enums.StatusEnum;
 import jakarta.persistence.Column;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -20,7 +22,8 @@ public abstract class BaseEntity {
   @Column(name = "data_alteracao", nullable = true)
   private LocalDateTime dataAlteracao;
 
-  @Column(name = "status")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false, length = 10)
   private StatusEnum status;
 
   @PrePersist

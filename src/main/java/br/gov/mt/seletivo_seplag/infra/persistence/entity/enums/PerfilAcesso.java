@@ -1,6 +1,5 @@
 package br.gov.mt.seletivo_seplag.infra.persistence.entity.enums;
 
-public enum TipoArtistaEnum {
-  SINGER,
-  BAND
+public enum PerfilAcesso {
+  ADMIN, USER;
 }

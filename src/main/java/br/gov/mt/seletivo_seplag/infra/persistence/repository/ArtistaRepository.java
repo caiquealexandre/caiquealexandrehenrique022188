@@ -8,11 +8,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ArtistaRepository extends JpaRepository<ArtistaEntity, Long> {
 
-  Page<ArtistaEntity> findByNameContainingIgnoreCase(String name,
+  Page<ArtistaEntity> findByNomeContainingIgnoreCase(String nome,
       Pageable pageable);
 
-  Page<ArtistaEntity> findByNameContainingIgnoreCaseAndType(String name,
-      TipoArtistaEnum tipoArtistaEnum,
+  Page<ArtistaEntity> findByNomeContainingIgnoreCaseAndTipoArtista(String nome,
+      TipoArtistaEnum tipoArtista,
       Pageable pageable);
 
 }

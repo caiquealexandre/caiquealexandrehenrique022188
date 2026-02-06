@@ -12,7 +12,7 @@ public interface AlbumRepository extends JpaRepository<AlbumEntity, Long> {
   @Query("""
         select distinct a from AlbumEntity a
         left join a.artistas ar
-        where (:artistName is null or lower(ar.name) like lower(concat('%', :artistName, '%')))
+        where (:artistName is null or lower(ar.nome) like lower(concat('%', :artistName, '%')))
       """)
   Page<AlbumEntity> findAllFiltered(@Param("artistName") String artistName, Pageable pageable);
 }

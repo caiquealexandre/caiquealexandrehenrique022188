@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -38,14 +39,16 @@ public class AlbumEntity {
   @Column(name = "ano_lancamento")
   private Integer anoLancamento;
 
+  @Default
   @ManyToMany
   @JoinTable(
-      name = "artista_album",
+      name = "tb_artista_album",
       joinColumns = @JoinColumn(name = "album_id"),
       inverseJoinColumns = @JoinColumn(name = "artista_id")
   )
   private Set<ArtistaEntity> artistas = new HashSet<>();
 
+  @Default
   @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
   private Set<AlbumImageEntity> images = new HashSet<>();
 }

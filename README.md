@@ -90,12 +90,12 @@ Tabela associativa: `artist_album(artist_id, album_id)`
 
 ### Tabelas principais (resumo)
 
-- `artist`: artistas (cantores/bandas)
-- `album`: álbuns
-- `artist_album`: relacionamento N:N
-- `album_image`: metadados das imagens armazenadas no MinIO
-- `app_user`: usuários do sistema (para autenticação)
-- `regional`: tabela interna sincronizada do endpoint externo
+- `tb_artista`: artistas (cantores/bandas)
+- `tb_album`: álbuns
+- `tb_artista_album`: relacionamento N:N
+- `tb_album_image`: metadados das imagens armazenadas no MinIO
+- `tb_usuario`: usuários do sistema (para autenticação)
+- `tb_regional`: tabela interna sincronizada do endpoint externo
 
 ### Seed (dados iniciais)
 
